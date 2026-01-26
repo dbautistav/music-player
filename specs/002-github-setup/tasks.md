@@ -61,10 +61,12 @@ Phase 6: Polish & Cross-Cutting
 
 ### Prerequisites Check
 
-- [ ] T001 Verify package.json exists at repository root
-- [ ] T002 Check if package.json contains required scripts: `typecheck`, `lint`, `test`, `test:component`, `build`, `preview`
-- [ ] T003 Verify project structure includes `src/`, `public/`, `tests/` directories
-- [ ] T004 Confirm GitHub repository has Actions and Pages features enabled (manual check)
+- [X] T001 Verify package.json exists at repository root
+- [X] T002 Check if package.json contains required scripts: `typecheck`, `lint`, `test`, `test:component`, `build`, `preview`
+- [X] T003 Verify project structure includes `src/`, `public/`, `tests/` directories
+- [X] T004 Confirm GitHub repository has Actions and Pages features enabled (manual check)
+
+**Output**: Project structure validated as suitable for infrastructure setup.
 
 **Output**: Project structure validated as suitable for infrastructure setup.
 
@@ -98,10 +100,10 @@ Phase 6: Polish & Cross-Cutting
 
 ### Implementation Tasks
 
-- [ ] T005 [P] [US1] Create .gitignore file at repository root with comprehensive patterns for Node.js, React, Vite, and PWA artifacts
-- [ ] T006 [P] [US1] Create .nvmrc file at repository root containing Node.js version "22" (LTS)
-- [ ] T007 [P] [US1] Verify .gitignore excludes node_modules/, dist/, .vite/, *.log, .vscode/, .idea/, .DS_Store, Thumbs.db, coverage/, playwright-report/, test-results/
-- [ ] T008 [US1] Test .gitignore functionality by creating files in ignored directories and confirming they don't appear in `git status`
+- [X] T005 [P] [US1] Create .gitignore file at repository root with comprehensive patterns for Node.js, React, Vite, and PWA artifacts
+- [X] T006 [P] [US1] Create .nvmrc file at repository root containing Node.js version "22" (LTS)
+- [X] T007 [P] [US1] Verify .gitignore excludes node_modules/, dist/, .vite/, *.log, .vscode/, .idea/, .DS_Store, coverage/, playwright-report/, test-results/
+- [X] T008 [US1] Test .gitignore functionality by creating files in ignored directories and confirming they don't appear in `git status`
 - [ ] T009 [US1] Test .nvmrc functionality by running `nvm use` (or equivalent) and confirming Node.js version matches
 
 **Tasks in this phase**: 5
