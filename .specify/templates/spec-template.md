@@ -82,6 +82,25 @@
   Fill them out with the right functional requirements.
 -->
 
+### Accessibility Requirements
+
+**IMPORTANT**: All UI features must meet WCAG 2.1 AA standards as per Constitution Section IX. Consider:
+
+- Keyboard navigation for all interactive elements
+- Screen reader compatibility (ARIA labels, semantic HTML)
+- Minimum 4.5:1 contrast ratio for text
+- 44px minimum touch targets
+- Reduced motion support
+
+### Design System Requirements
+
+**IMPORTANT**: All UI features must use the established design system as per Constitution Section X. Consider:
+
+- Use design tokens (colors, typography, spacing) from `src/design-system/tokens/`
+- Prefer component library components over custom implementations
+- Follow 60-30-10 color distribution rule
+- Use purposeful whitespace and minimalist design principles
+
 ### Functional Requirements
 
 - **FR-001**: System MUST [specific capability, e.g., "allow users to create accounts"]

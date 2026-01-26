@@ -156,6 +156,8 @@ Examples of foundational tasks (adjust based on your project):
 - [ ] TXXX [P] Additional unit tests (if requested) in tests/unit/
 - [ ] TXXX Security hardening
 - [ ] TXXX Run quickstart.md validation
+- [ ] TXXX [P] Accessibility audit and fixes (axe-core, keyboard testing, screen reader testing)
+- [ ] TXXX Design system adherence verification (tokens used, components from library)
 
 ---
 

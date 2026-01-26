@@ -31,7 +31,25 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+**Required Gates** (All must PASS or justify violations):
+
+- **Offline-First Architecture (Section I)**: Does feature work offline appropriately?
+- **Mobile-First Responsive Design (Section II)**: Are touch targets 44px+? Are breakpoints defined?
+- **Type Safety & Modern Standards (Section III)**: Is TypeScript strict mode enabled? No `any` types?
+- **Performance Standards (Section IV)**: Are domain-specific and general performance targets met?
+- **Test-Driven Development (Section V)**: Are tests defined before implementation?
+- **Progressive Web App Standards (Section VI)**: Does feature maintain PWA requirements?
+- **Observability (Section VII)**: Are metrics and logging defined?
+- **Modern Web APIs (Section VIII)**: Are native APIs preferred over libraries?
+- **Accessibility Standards (Section IX)**: Does feature meet WCAG 2.1 AA? Are a11y tests defined?
+- **Design System Adherence (Section X)**: Does feature use design tokens/components? Is justification provided for custom UI?
+
+**Constitution Violation Tracking**:
+
+> Fill ONLY if Constitution Check has violations that must be justified
+
+| Violation | Why Needed | Simpler Alternative Rejected Because |
+|-----------|------------|-------------------------------------|
 
 ## Project Structure
 
