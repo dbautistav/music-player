@@ -20,7 +20,9 @@ As a user, I want to see all available songs loaded automatically from a catalog
 1. **Given** the application is loaded, **When** the page renders, **Then** all songs from catalog.json are displayed automatically
 2. **Given** a catalog with multiple songs, **When** the user views the page, **Then** each song shows title, artist, and duration (if provided)
 3. **Given** the catalog is loading, **When** the fetch is in progress, **Then** a loading indicator is displayed
-4. **Given** the catalog fails to load, **When** an error occurs, **Then** a user-friendly error message is shown with a retry button
+4. **Given** the catalog is loading, **When** the fetch completes successfully, **Then** the loading indicator is hidden and songs are displayed
+5. **Given** the catalog is loading, **When** the fetch fails with error, **Then** the loading indicator is hidden and an error message is shown
+6. **Given** the catalog fails to load, **When** an error occurs, **Then** a user-friendly error message is shown with a retry button
 
 ---
 
