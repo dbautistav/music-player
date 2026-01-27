@@ -400,6 +400,43 @@ try {
 - Provide example code to follow
 - Consider manual implementation for complex pieces (e.g., Service Worker)
 
+### AI-Assisted Debugging (Added Phase 2)
+**Proven workflow from Phase 2 loading skeleton bug fix**:
+
+```bash
+# Step 1: Add buggy file to context
+context-harness add src/app.js
+context-harness bundle > context.txt
+
+# Step 2: Describe bug with specifics
+opencode generate \
+  --context context.txt \
+  --prompt "Bug: [Observed behavior] happens, but [Expected behavior] should happen. 
+           [What works correctly]. [What doesn't work]. 
+           Debug and fix [specific function/area]." \
+  --output src/
+
+# Step 3: Test immediately
+
+# Step 4: If it fails, add more constraints
+opencode generate \
+  --context context.txt \
+  --constraint "Ensure [specific implementation detail]" \
+  --constraint "Verify [specific condition]" \
+  --prompt "Fix [specific bug]" \
+  --output src/
+```
+
+**Debugging Prompt Formula**:
+- ✅ State observed behavior clearly
+- ✅ State expected behavior clearly  
+- ✅ Mention what IS working (narrows problem space)
+- ✅ Be specific about which function/component is suspect
+- ❌ Don't say "fix my code" (too vague)
+- ❌ Don't include entire codebase (too much context)
+
+**Key Learning**: AI debugging works best when you can articulate the gap between expected and observed behavior, even if you don't know the cause.
+
 ---
 
 ## Future Considerations (Not Now, But Keep in Mind)
@@ -425,6 +462,135 @@ try {
 - Don't add abstractions until you need them (YAGNI principle)
 - Don't optimize prematurely
 - Don't skip documentation "for now"
+
+---
+
+## Phase 3 Preparation Guide
+
+**Before starting Phase 3, consider these recommendations based on Phases 1-2 success:**
+
+### Recommended Approach for Service Workers
+
+**Option A: Vanilla SW First (Recommended for Learning)** ⭐
+```bash
+# Attempt vanilla Service Worker implementation
+# If it becomes unmanageable (>200 LOC or too complex), pivot to Workbox
+# This validates whether abstraction is needed
+```
+
+**Pros**: 
+- ✅ Learn SW fundamentals deeply
+- ✅ Keep zero-dependency streak
+- ✅ Understand exactly what Workbox would abstract
+
+**Cons**:
+- ⚠️ SW lifecycle is tricky (install, activate, update)
+- ⚠️ Cache strategies require careful thought
+- ⚠️ More code to maintain
+
+**Option B: Workbox from Start**
+```bash
+npm install workbox-build --save-dev
+# Use Workbox CLI or webpack plugin
+```
+
+**Pros**:
+- ✅ Battle-tested SW abstraction
+- ✅ Less code to write
+- ✅ Handles edge cases automatically
+
+**Cons**:
+- ❌ First dependency (breaks learning pattern)
+- ❌ Requires build step
+- ❌ Abstracts away SW fundamentals
+
+**My Recommendation**: Try Option A first. If vanilla SW becomes painful (you'll know within 2-3 hours), switch to Workbox. Document the decision in the Dependency Decision Log.
+
+---
+
+### Build Tool Decision
+
+**When to add a build step**:
+- ✅ If you add Workbox (requires build integration)
+- ✅ If bundle size exceeds 150KB unminified
+- ✅ If you want code splitting for better performance
+- ❌ Not needed if staying vanilla (Service Workers can be written without build)
+
+**Recommended tool if needed**: 
+- **Vite** - Modern, fast, great DX, minimal config
+- Alternative: **esbuild** - Even faster, more manual
+
+---
+
+### Testing Strategy for Phase 3
+
+**Manual Testing Focus**:
+- Service Worker install/activate/update lifecycle
+- Offline mode (Chrome DevTools → Network → Offline)
+- Cache storage inspection (DevTools → Application → Cache Storage)
+- IndexedDB inspection (DevTools → Application → IndexedDB)
+
+**Consider automated testing if**:
+- You find yourself manually testing the same scenario 5+ times
+- SW updates break existing functionality
+- Cache invalidation becomes complex
+
+**Tool recommendation**: Vitest + Playwright (only if you hit the pain threshold)
+
+---
+
+### Storage Quota Considerations
+
+Different browsers have different storage limits:
+- Chrome/Edge: ~6% of available disk space
+- Firefox: ~10% with user prompt
+- Safari: 50MB without prompt (⚠️ most restrictive)
+
+**Strategy**:
+- Start with 5-10 songs cached (safe for all browsers)
+- Implement quota checking before downloads
+- Provide clear feedback when storage is low
+- Allow users to manage cached content
+
+---
+
+### Phase 3 Completion Criteria
+
+You'll know Phase 3 is done when:
+- [ ] App loads offline (after first online visit)
+- [ ] User can cache songs with download button
+- [ ] Cached songs play without network
+- [ ] Cache management UI shows storage usage
+- [ ] Service Worker updates don't break app
+- [ ] Works in Chrome, Firefox, Safari (with known limitations)
+
+---
+
+## Pre-Phase 3 Checklist
+
+Before generating Phase 3 code:
+
+**Code Readiness**:
+- [ ] Phase 2 code is clean and working
+- [ ] No known bugs in catalog loading or playback
+- [ ] catalog.json has song URLs that will remain stable
+
+**Context Preparation**:
+- [ ] Add constitution.md to context (for technical guidelines)
+- [ ] Add phase3-caching.md spec to context
+- [ ] Add src/app.js to context (to build on existing patterns)
+- [ ] Consider adding successful Phase 2 patterns as examples
+
+**Decision Points**:
+- [ ] Vanilla SW or Workbox? (Start vanilla, pivot if needed)
+- [ ] Build tool? (Defer until needed)
+- [ ] Testing? (Manual first, automated if pain point emerges)
+
+**Mental Preparation**:
+- Service Workers are the most complex part of this project
+- Expect 2-3 iterations to get it right
+- AI may struggle with SW lifecycle - be ready to debug or manual implement
+- This phase typically takes 2-3x longer than Phase 1 or 2
 
 ---
 
@@ -476,9 +642,12 @@ try {
 
 | Phase | Decision | Rationale | Status |
 |-------|----------|-----------|--------|
-| Phase 1 | No frameworks | Learn fundamentals, minimize bundle size | ✅ Validated - worked great |
-| Phase 2 | No build tools | Keep it simple for dynamic catalog | 🔄 Re-evaluate in Phase 3 if bundling needed |
-| Phase 3 | TBD: Workbox? | Service Workers are complex - may need help | ⏳ Pending evaluation |
+| Phase 1 | No frameworks | Learn fundamentals, minimize bundle size | ✅ Validated - worked perfectly |
+| Phase 1 | Vanilla JS only | Web Audio API + DOM manipulation sufficient | ✅ Validated - no complexity issues |
+| Phase 2 | No build tools | Fetch + JSON simple enough without bundling | ✅ Validated - no performance issues |
+| Phase 2 | No search library | Native Array.filter() + debounce sufficient | ✅ Validated - smooth with 100+ songs |
+| Phase 3 | TBD: Workbox? | Service Workers are complex - may need abstraction | ⏳ Pending evaluation |
+| Phase 3 | TBD: Build step? | May need for SW optimization and code splitting | ⏳ Pending evaluation |
 
 ### Future Considerations
 
@@ -506,41 +675,73 @@ try {
 ### Phase 1: Foundation ✅ COMPLETE
 **Completed**: 2026-01-26  
 **Key Learnings**:
-- Vanilla JS was sufficient for basic playback
-- Web Audio API is straightforward
-- No framework needed for simple UI
-- [Add your specific learnings here as you complete phases]
+- ✅ Vanilla JS was sufficient for basic playback
+- ✅ Web Audio API is straightforward and well-supported
+- ✅ No framework needed for simple UI (buttons, event listeners)
+- ✅ ES6+ features (const/let, arrow functions, template literals) worked perfectly across target browsers
+- ✅ Mobile-first CSS with flexbox handled responsive layout without issues
+- ✅ GLM-4.7 (via opencode/spec-kit) successfully generated working code from clear specs
 
 **Constitution Updates**:
 - None needed - initial assumptions held true
+- Validated: Zero-dependency approach is viable for Phases 1-2
 
 **Recommended Changes for Phase 2**:
-- None - continue with current approach
+- Continue with current approach (vanilla JS, no build tools)
 
 ---
 
-### Phase 2: Dynamic Catalog ⏳ PENDING
-**Target Completion**: TBD  
-**Key Questions to Answer**:
-- Does fetch + JSON work smoothly?
-- Is search performance acceptable without frameworks?
-- Do we need a build step?
+### Phase 2: Dynamic Catalog ✅ COMPLETE
+**Completed**: 2026-01-26  
+**Key Learnings**:
+- ✅ Fetch API + JSON worked smoothly for catalog loading
+- ✅ Search/filter with ~100 songs had no performance issues (no framework needed)
+- ✅ Debouncing at 300ms felt natural and responsive
+- ✅ Loading skeleton pattern improved perceived performance
+- ✅ AI-assisted debugging worked well: loading skeleton bug fixed via opencode with specific prompt
+- ✅ Lazy loading images (`loading="lazy"`) prevented layout issues
+- ✅ DocumentFragment for batch rendering was efficient
 
-**Expected Constitution Updates**:
-- TBD based on learnings
+**Bug Fixes Applied**:
+- Loading skeleton persisted after catalog load → Fixed via AI-generated code with clear bug description
+- Debugging approach: Added buggy file to context, described observed vs expected behavior, AI generated fix
+
+**Constitution Updates**:
+- Validated: No build tools needed yet (fetch/JSON is simple enough)
+- Confirmed: Debounce timing (300ms) is optimal
+- Proven: AI debugging workflow is effective with specific prompts
+
+**Recommended Changes for Phase 3**:
+- ⚠️ Service Workers are complex - strongly consider Workbox
+- ⚠️ May need build step for production optimization (minification, bundling)
+- ✅ Continue with vanilla JS for UI logic (still manageable)
 
 ---
 
-### Phase 3: Offline & Caching ⏳ PENDING
+### Phase 3: Offline & Caching ⏳ IN PROGRESS
 **Target Completion**: TBD  
+**Status**: Ready to start - Phases 1-2 foundation is solid
+
 **Key Questions to Answer**:
-- Can we manage Service Workers without Workbox?
-- Is IndexedDB complexity manageable?
-- Do we need additional abstractions?
+- Can we manage Service Workers without Workbox? (Vanilla SW is 200+ LOC typically)
+- Is IndexedDB complexity manageable with vanilla JS?
+- Do we need a build step for SW optimization?
+- How do we handle SW lifecycle (install, activate, update)?
+- Storage quota management - how to handle gracefully?
 
 **Expected Constitution Updates**:
-- May add Workbox to approved dependencies
-- May introduce build step (Vite/esbuild)
+- Likely: Add Workbox to approved dependencies (SW abstraction)
+- Likely: Introduce build step (Vite or esbuild for production optimization)
+- Possible: Add testing framework (Vitest) if complexity increases significantly
+- Monitor: Bundle size (must stay under 200KB for app shell)
+
+**Pre-Phase 3 Checklist**:
+- ✅ Phase 1-2 code is working and stable
+- ✅ Constitution updated with learnings
+- ✅ catalog.json is well-structured (Phase 2)
+- ⏳ Review Phase 3 spec thoroughly
+- ⏳ Decide: Vanilla SW or Workbox? (recommend attempting vanilla first, then evaluate)
+- ⏳ Set up testing approach (manual initially, automated if needed)
 
 ---
 
@@ -548,6 +749,7 @@ try {
 
 - **v1.0** (2026-01-26): Initial constitution based on project kickoff discussion
 - **v1.1** (2026-01-26): Added progressive enhancement philosophy, Dependency Decision Log, and Phase Completion Checklist after Phase 1 success
+- **v1.2** (2026-01-26): Updated with Phase 1 & 2 completion learnings; added AI-Assisted Debugging workflow; prepared for Phase 3 with informed expectations
 
 ---
 

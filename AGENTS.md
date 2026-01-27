@@ -137,6 +137,8 @@ function formatDuration(seconds) {
 - JavaScript ES6+ (Chrome/Edge 90+, Firefox 88+, Safari 14+, iOS Safari 14+) + None (Phase 1-2: Zero dependencies per constitution) (004-static-playback)
 - In-memory only (3 hardcoded songs in array, no persistence) (004-static-playback)
 - JSON files (catalog.json), in-memory array for loaded songs (002-dynamic-catalog)
+- JavaScript ES6+ (const/let, arrow functions, async/await, template literals) + None initially (vanilla JavaScript), may evaluate Workbox for Service Worker abstraction (005-phase3-caching)
+- IndexedDB for cached song audio blobs and metadata, Cache API for app shell files (HTML/CSS/JS), LocalStorage for user preferences (005-phase3-caching)
 
 ## Recent Changes
 - 004-static-playback: Added JavaScript ES6+ (Chrome/Edge 90+, Firefox 88+, Safari 14+, iOS Safari 14+) + None (Phase 1-2: Zero dependencies per constitution)
