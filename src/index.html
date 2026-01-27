@@ -13,7 +13,24 @@
     </header>
 
     <main>
-      <div id="song-list"></div>
+      <section class="search-section">
+        <input type="text" id="search-input" placeholder="Search songs or artists..." aria-label="Search songs" role="searchbox" aria-controls="song-list">
+        <button id="clear-search" class="clear-btn" aria-label="Clear search">✕</button>
+      </section>
+
+      <div id="loading-skeleton" class="loading-skeleton" hidden aria-busy="true" aria-live="polite">
+        <div class="skeleton-item"></div>
+        <div class="skeleton-item"></div>
+        <div class="skeleton-item"></div>
+      </div>
+
+      <div id="error-state" class="error-state" hidden role="alert" aria-live="assertive">
+        <p id="error-message">Unable to load song catalog. Please try again later.</p>
+        <button id="retry-btn" aria-label="Retry loading catalog">Retry</button>
+      </div>
+
+      <div id="song-list" role="list" aria-live="polite"></div>
+
       <div id="player-controls">
         <button id="prev-btn" aria-label="Previous song">Previous</button>
         <button id="play-pause-btn" aria-label="Play or pause">Play</button>

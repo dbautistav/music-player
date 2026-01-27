@@ -9,9 +9,10 @@
 ## Core Philosophy
 
 This project prioritizes:
-1. **Incremental progress** - Small, working iterations over big-bang releases
-2. **Modern standards** - Use current best practices, not legacy approaches
-3. **Simplicity first** - Start minimal, add complexity only when needed
+1. **Learning over shipping** - Focus on understanding AI-assisted development patterns
+2. **Incremental progress** - Small, working iterations over big-bang releases
+3. **Modern standards** - Use current best practices, not legacy approaches
+4. **Simplicity first** - Start minimal, add complexity only when needed
 
 ---
 
@@ -20,24 +21,34 @@ This project prioritizes:
 ### Language & Runtime
 - **JavaScript**: ES6+ features required (const/let, arrow functions, template literals, async/await)
 - **No TypeScript**: Keep it simple for Phase 1-3; may introduce later
-- **Node.js version**: LTS (22.x) - specified in `.nvmrc`
+- **Node.js version**: LTS (20.x or 22.x) - specified in `.nvmrc`
 
 ### Frameworks & Libraries
 
-**Phase 1-2**: Zero dependencies
-- Vanilla JavaScript only
-- No React, Vue, Svelte, or similar frameworks
-- No jQuery or lodash
-- Rationale: Understand web fundamentals before adding abstractions
+**Progressive Enhancement Philosophy**: Start with zero dependencies, add only when complexity justifies the cost.
 
-**Phase 3**: Minimal, targeted additions
-- Consider Workbox for Service Worker complexity
-- May use lightweight utilities if they solve real problems
-- Each dependency must be justified
+**Phase 1-2**: Zero dependencies ✓ COMPLETED
+- ✅ Vanilla JavaScript proved sufficient for static playback and dynamic catalog
+- ✅ Validated that web fundamentals can handle core features
+- 🎓 Learning outcome: Modern browser APIs are powerful enough for basic apps
 
-**Phase 4+**: Framework consideration
-- If complexity warrants it, evaluate modern options (Svelte, Preact, Lit)
-- Decision should be data-driven (bundle size, learning curve, ecosystem)
+**Phase 3**: Evaluate targeted additions
+- ⚠️ Consider Workbox if vanilla Service Worker becomes unmanageable
+- ⚠️ May use lightweight utilities if they solve real problems (< 10KB each)
+- ✅ Each dependency must be justified in this document (see "Dependency Decision Log" below)
+
+**Phase 4+**: Framework decision point
+- 🔍 If codebase exceeds 1000 LOC and state management becomes complex, evaluate:
+  - Svelte (compiler-based, small bundle)
+  - Preact (React-compatible, 3KB)
+  - Lit (web components, 5KB)
+- ❌ Avoid: React (too heavy), Vue (unnecessary for this scale), Angular (overkill)
+- ✅ Decision criteria: bundle size impact, learning curve, ecosystem maturity
+
+**TypeScript**: Not needed for Phase 1-3
+- May introduce in Phase 4+ if codebase complexity warrants
+- Use JSDoc type comments as intermediate step
+- Decision should be based on real pain points (e.g., frequent runtime type errors)
 
 ### Build Tools
 
@@ -453,9 +464,90 @@ try {
 
 ---
 
+## Dependency Decision Log
+
+**Purpose**: Track all dependencies added, with rationale and impact assessment.
+
+### Current Dependencies (Phase 1-3)
+
+**None** - Pure vanilla JavaScript, HTML, CSS
+
+### Decisions Made
+
+| Phase | Decision | Rationale | Status |
+|-------|----------|-----------|--------|
+| Phase 1 | No frameworks | Learn fundamentals, minimize bundle size | ✅ Validated - worked great |
+| Phase 2 | No build tools | Keep it simple for dynamic catalog | 🔄 Re-evaluate in Phase 3 if bundling needed |
+| Phase 3 | TBD: Workbox? | Service Workers are complex - may need help | ⏳ Pending evaluation |
+
+### Future Considerations
+
+| Candidate | Use Case | Approved? | Notes |
+|-----------|----------|-----------|-------|
+| Workbox | Service Worker abstraction | 🟡 Maybe | Evaluate after attempting vanilla SW |
+| Vite | Build tooling for production | 🟡 Maybe | Only if we need bundling/minification |
+| Vitest | Testing framework | 🟡 Maybe | Add when codebase reaches 500+ LOC |
+| Svelte | UI framework | 🟡 Maybe | Only if state management becomes painful |
+| TypeScript | Type safety | 🔴 No (for now) | Use JSDoc instead; revisit if type errors become frequent |
+
+**Decision Criteria** (all must be true to add a dependency):
+1. Solves a real problem you've encountered (not hypothetical)
+2. Vanilla JS solution would be >50 LOC or significantly complex
+3. Bundle size impact is < 20KB (or justified by major functionality)
+4. Library is actively maintained (updated within last 6 months)
+5. Adds no transitive dependencies (or very few)
+
+---
+
+## Phase Completion Checklist
+
+**After completing each phase, update this section:**
+
+### Phase 1: Foundation ✅ COMPLETE
+**Completed**: 2026-01-26  
+**Key Learnings**:
+- Vanilla JS was sufficient for basic playback
+- Web Audio API is straightforward
+- No framework needed for simple UI
+- [Add your specific learnings here as you complete phases]
+
+**Constitution Updates**:
+- None needed - initial assumptions held true
+
+**Recommended Changes for Phase 2**:
+- None - continue with current approach
+
+---
+
+### Phase 2: Dynamic Catalog ⏳ PENDING
+**Target Completion**: TBD  
+**Key Questions to Answer**:
+- Does fetch + JSON work smoothly?
+- Is search performance acceptable without frameworks?
+- Do we need a build step?
+
+**Expected Constitution Updates**:
+- TBD based on learnings
+
+---
+
+### Phase 3: Offline & Caching ⏳ PENDING
+**Target Completion**: TBD  
+**Key Questions to Answer**:
+- Can we manage Service Workers without Workbox?
+- Is IndexedDB complexity manageable?
+- Do we need additional abstractions?
+
+**Expected Constitution Updates**:
+- May add Workbox to approved dependencies
+- May introduce build step (Vite/esbuild)
+
+---
+
 ## Revision History
 
 - **v1.0** (2026-01-26): Initial constitution based on project kickoff discussion
+- **v1.1** (2026-01-26): Added progressive enhancement philosophy, Dependency Decision Log, and Phase Completion Checklist after Phase 1 success
 
 ---
 

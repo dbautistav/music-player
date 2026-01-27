@@ -136,6 +136,7 @@ function formatDuration(seconds) {
 ## Active Technologies
 - JavaScript ES6+ (Chrome/Edge 90+, Firefox 88+, Safari 14+, iOS Safari 14+) + None (Phase 1-2: Zero dependencies per constitution) (004-static-playback)
 - In-memory only (3 hardcoded songs in array, no persistence) (004-static-playback)
+- JSON files (catalog.json), in-memory array for loaded songs (002-dynamic-catalog)
 
 ## Recent Changes
 - 004-static-playback: Added JavaScript ES6+ (Chrome/Edge 90+, Firefox 88+, Safari 14+, iOS Safari 14+) + None (Phase 1-2: Zero dependencies per constitution)

@@ -1,76 +1,104 @@
-# Implementation Plan: Static Music Player
+# Implementation Plan: [FEATURE]
 
-**Branch**: `004-static-playback` | **Date**: 2026-01-26 | **Spec**: [spec.md](./spec.md)
-**Input**: Feature specification from `/specs/004-static-playback/spec.md`
+**Branch**: `[###-feature-name]` | **Date**: [DATE] | **Spec**: [link]
+**Input**: Feature specification from `/specs/[###-feature-name]/spec.md`
 
-**Note**: This template is filled in by `/speckit.plan` command. See `.specify/templates/commands/plan.md` for execution workflow.
+**Note**: This template is filled in by the `/speckit.plan` command. See `.specify/templates/commands/plan.md` for the execution workflow.
 
 ## Summary
 
-Implement a minimal web-based music player with 3 hardcoded songs using vanilla JavaScript, HTML5, and CSS3. The application provides core functionality: view songs, play/pause control, and navigation between songs. Technical approach follows constitution principles: zero dependencies, no build tools, Web Audio API for playback, and mobile-first responsive design.
+[Extract from feature spec: primary requirement + technical approach from research]
 
 ## Technical Context
 
-**Language/Version**: JavaScript ES6+ (Chrome/Edge 90+, Firefox 88+, Safari 14+, iOS Safari 14+)
-**Primary Dependencies**: None (Phase 1-2: Zero dependencies per constitution)
-**Storage**: In-memory only (3 hardcoded songs in array, no persistence)
-**Testing**: Manual testing (Browser DevTools, cross-browser checks, Lighthouse audits)
-**Target Platform**: Modern web browsers with Web Audio API support
-**Project Type**: web application (single HTML page, no backend)
-**Performance Goals**: Playback starts <1s, page loads <3s on 3G, 60fps UI animations
-**Constraints**: No frameworks (React, Vue, jQuery), no build tools, <200KB initial bundle, vanilla JS only
-**Scale/Scope**: 3 static songs, single page application, basic playback controls
+<!--
+  ACTION REQUIRED: Replace the content in this section with the technical details
+  for the project. The structure here is presented in advisory capacity to guide
+  the iteration process.
+-->
+
+**Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]  
+**Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]  
+**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]  
+**Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]  
+**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]
+**Project Type**: [single/web/mobile - determines source structure]  
+**Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]  
+**Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]  
+**Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
 
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-✅ **Zero Dependencies**: No npm packages or external libraries (Constitution: "Phase 1-2: Zero dependencies")
-✅ **Vanilla JavaScript Only**: No frameworks, build tools, or transpilation (Constitution: "Phase 1-2: Vanilla JavaScript only")
-✅ **Manual Testing**: Browser DevTools and manual cross-browser verification (Constitution: "Phase 1-2: Manual testing")
-✅ **No Build Tools**: Direct file serving, Python http.server (Constitution: "Phase 1-2: None")
-✅ **Web Audio API**: Using built-in browser API for playback control (Constitution: "Required APIs")
-✅ **ES6+ Features**: const/let, arrow functions, template literals, async/await (Constitution: "JavaScript: ES6+ features required")
-✅ **Mobile-First Design**: Design for 375px width, scale up to 1920px (Constitution: "Mobile-first")
-✅ **Performance Standards**: TTI <3s, Playback <1s, 60fps (Constitution: "Performance Standards")
-✅ **Accessibility**: WCAG 2.1 AA compliance, semantic HTML, ARIA labels (Constitution: "Accessibility")
-✅ **Code Style**: 2-space indentation, single quotes, semicolons, max 100 char lines (Constitution: "Code Style")
-
-**Gate Status**: PASSED ✓
+[Gates determined based on constitution file]
 
 ## Project Structure
 
 ### Documentation (this feature)
 
 ```text
-specs/004-static-playback/
+specs/[###-feature]/
 ├── plan.md              # This file (/speckit.plan command output)
 ├── research.md          # Phase 0 output (/speckit.plan command)
-├── data-model.md        # Phase1 output (/speckit.plan command)
-├── quickstart.md        # Phase1 output (/speckit.plan command)
-├── contracts/           # Phase1 output (N/A - no APIs in Phase 1)
+├── data-model.md        # Phase 1 output (/speckit.plan command)
+├── quickstart.md        # Phase 1 output (/speckit.plan command)
+├── contracts/           # Phase 1 output (/speckit.plan command)
 └── tasks.md             # Phase 2 output (/speckit.tasks command - NOT created by /speckit.plan)
 ```
 
 ### Source Code (repository root)
+<!--
+  ACTION REQUIRED: Replace the placeholder tree below with the concrete layout
+  for this feature. Delete unused options and expand the chosen structure with
+  real paths (e.g., apps/admin, packages/something). The delivered plan must
+  not include Option labels.
+-->
 
 ```text
+# [REMOVE IF UNUSED] Option 1: Single project (DEFAULT)
 src/
-├── index.html          # Main HTML page with semantic markup
-├── styles.css          # All styles (responsive, mobile-first)
-├── app.js              # Main application logic (playback controls)
-└── songs/              # Audio files directory (optional, can use external URLs)
-    ├── song1.mp3
-    ├── song2.mp3
-    └── song3.mp3
+├── models/
+├── services/
+├── cli/
+└── lib/
+
+tests/
+├── contract/
+├── integration/
+└── unit/
+
+# [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "backend" detected)
+backend/
+├── src/
+│   ├── models/
+│   ├── services/
+│   └── api/
+└── tests/
+
+frontend/
+├── src/
+│   ├── components/
+│   ├── pages/
+│   └── services/
+└── tests/
+
+# [REMOVE IF UNUSED] Option 3: Mobile + API (when "iOS/Android" detected)
+api/
+└── [same as backend above]
+
+ios/ or android/
+└── [platform-specific structure: feature modules, UI flows, platform tests]
 ```
 
-**Structure Decision**: Single-file structure (Option 1) is selected per constitution "File Structure" section. This Phase 1 feature requires no build tools, no module splitting, and can use direct script imports from HTML. The `songs/` directory is optional - audio files can be external URLs if preferred.
+**Structure Decision**: [Document the selected structure and reference the real
+directories captured above]
 
 ## Complexity Tracking
 
-> **No violations** - All constitution gates passed, no complexity deviations required.
+> **Fill ONLY if Constitution Check has violations that must be justified**
 
 | Violation | Why Needed | Simpler Alternative Rejected Because |
-|------------|------------|-------------------------------------|
-| N/A | N/A | N/A |
+|-----------|------------|-------------------------------------|
+| [e.g., 4th project] | [current need] | [why 3 projects insufficient] |
+| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient] |

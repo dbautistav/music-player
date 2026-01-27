@@ -1,0 +1,111 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://music-player.example.com/catalog.schema.json",
+  "title": "Song Catalog",
+  "description": "Schema for the music player catalog.json file",
+  "type": "object",
+  "required": ["version", "songs"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Catalog format version",
+      "pattern": "^\\d+\\.\\d+$",
+      "examples": ["1.0", "2.0"]
+    },
+    "lastUpdated": {
+      "type": "string",
+      "description": "Last updated timestamp in ISO 8601 format",
+      "format": "date-time",
+      "examples": ["2026-01-26T12:00:00Z"]
+    },
+    "songs": {
+      "type": "array",
+      "description": "Array of songs in the catalog",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "artist", "url"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the song",
+            "minLength": 1,
+            "examples": ["song-001", "track-123"]
+          },
+          "title": {
+            "type": "string",
+            "description": "Song title",
+            "minLength": 1,
+            "examples": ["Bohemian Rhapsody", "Stairway to Heaven"]
+          },
+          "artist": {
+            "type": "string",
+            "description": "Artist or band name",
+            "minLength": 1,
+            "examples": ["Queen", "Led Zeppelin"]
+          },
+          "url": {
+            "type": "string",
+            "description": "URL to the audio file",
+            "format": "uri",
+            "pattern": "^https?://",
+            "examples": ["https://example.com/songs/song1.mp3"]
+          },
+          "duration": {
+            "type": "integer",
+            "description": "Duration of the song in seconds",
+            "minimum": 1,
+            "examples": [180, 240, 157]
+          },
+          "albumArt": {
+            "type": "string",
+            "description": "URL to the album art image",
+            "format": "uri",
+            "pattern": "^https?://",
+            "examples": ["https://example.com/images/album1.jpg"]
+          },
+          "fileSize": {
+            "type": "integer",
+            "description": "File size in bytes",
+            "minimum": 1,
+            "examples": [5242880, 3774873]
+          },
+          "album": {
+            "type": "string",
+            "description": "Album name",
+            "examples": ["A Night at the Opera", "Led Zeppelin IV"]
+          },
+          "year": {
+            "type": "integer",
+            "description": "Release year",
+            "minimum": 1900,
+            "maximum": 2100,
+            "examples": [1975, 1971]
+          },
+          "genre": {
+            "type": "string",
+            "description": "Music genre",
+            "examples": ["Rock", "Pop", "Acoustic", "Jazz", "Classical"]
+          }
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "version": "1.0",
+      "lastUpdated": "2026-01-26T12:00:00Z",
+      "songs": [
+        {
+          "id": "song-001",
+          "title": "Example Song",
+          "artist": "Example Artist",
+          "url": "https://example.com/songs/song1.mp3",
+          "duration": 180,
+          "albumArt": "https://example.com/images/album1.jpg",
+          "genre": "Pop"
+        }
+      ]
+    }
+  ]
+}

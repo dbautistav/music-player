@@ -1,0 +1,36 @@
+{
+  "version": "1.0",
+  "lastUpdated": "2026-01-26",
+  "songs": [
+    {
+      "id": "song-001",
+      "title": "Acoustic Breeze",
+      "artist": "Benjamin Tissot",
+      "url": "https://www.bensound.com/bensound-music/bensound-acousticbreeze.mp3",
+      "duration": 157,
+      "albumArt": "https://www.bensound.com/bensound-img/acousticbreeze.jpg",
+      "genre": "Acoustic",
+      "fileSize": 3774873
+    },
+    {
+      "id": "song-002",
+      "title": "Sunny",
+      "artist": "Benjamin Tissot",
+      "url": "https://www.bensound.com/bensound-music/bensound-sunny.mp3",
+      "duration": 142,
+      "albumArt": "https://www.bensound.com/bensound-img/sunny.jpg",
+      "genre": "Acoustic",
+      "fileSize": 3423258
+    },
+    {
+      "id": "song-003",
+      "title": "Ukulele",
+      "artist": "Benjamin Tissot",
+      "url": "https://www.bensound.com/bensound-music/bensound-ukulele.mp3",
+      "duration": 146,
+      "albumArt": "https://www.bensound.com/bensound-img/ukulele.jpg",
+      "genre": "Folk",
+      "fileSize": 3521642
+    }
+  ]
+}
