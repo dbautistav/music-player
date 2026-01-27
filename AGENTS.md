@@ -132,3 +132,10 @@ function formatDuration(seconds) {
 4. **Accessibility**: Usable for everyone
 5. **No Dependencies**: Vanilla, no frameworks
 6. **Progressive Enhancement**: Basic works everywhere, enhanced features for capable browsers
+
+## Active Technologies
+- JavaScript ES6+ (Chrome/Edge 90+, Firefox 88+, Safari 14+, iOS Safari 14+) + None (Phase 1-2: Zero dependencies per constitution) (004-static-playback)
+- In-memory only (3 hardcoded songs in array, no persistence) (004-static-playback)
+
+## Recent Changes
+- 004-static-playback: Added JavaScript ES6+ (Chrome/Edge 90+, Firefox 88+, Safari 14+, iOS Safari 14+) + None (Phase 1-2: Zero dependencies per constitution)
