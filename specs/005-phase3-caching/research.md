@@ -414,6 +414,173 @@ async function networkFirst(request) {
 - [Service Worker API - MDN](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API)
 - [IndexedDB API - MDN](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API)
 - [Cache API - MDN](https://developer.mozilla.org/en-US/docs/Web/API/Cache)
-- [Web App Manifest - MDN](https://developer.mozilla.org/en-US/docs/Web/Manifest)
+- [Web App Manifest - MDN](https://developer.mozilla.org/en-US/docs/Manifest)
 - [PWA Best Practices - web.dev](https://web.dev/pwa/)
 - [Storage Quota - web.dev](https://web.dev/storage-for-the-web/)
+
+---
+
+## Bug Fix Research (2026-01-28)
+
+**Context**: User testing revealed critical bugs in Phase 3 implementation preventing the app from functioning. This section documents the issues found and research for fixes.
+
+### Bug 1: MusicPlayerDB Not Defined
+
+**Error**: `app.js:8` throws `Uncaught ReferenceError: MusicPlayerDB is not defined`
+
+**Root Cause**: `db.js` contains the `MusicPlayerDB` class but is not loaded in `index.html`
+
+**Research**:
+- Script loading order in vanilla JavaScript: Scripts execute in order they appear in DOM
+- app.js line 8: `const db = new MusicPlayerDB();` executes before MusicPlayerDB is defined
+- db.js must be loaded before app.js
+
+**Decision**: Add `<script src="db.js"></script>` before `<script src="app.js"></script>` in index.html
+
+**Rationale**: Vanilla JS doesn't have ES modules in this phase, so script order matters. Loading db.js first ensures class is available when app.js references it.
+
+**Alternatives Considered**:
+- Move MusicPlayerDB to app.js: Rejected - violates separation of concerns, makes app.js too large
+- Use ES modules: Rejected - Constitution specifies no build tools/ES modules for Phase 1-3
+- Dynamic import: Rejected - Adds complexity, not needed for this simple app
+
+---
+
+### Bug 2: CSP Violation - Inline Script
+
+**Error**: Browser console shows CSP error blocking inline script
+```
+Content-Security-Policy: The page's settings blocked an inline script
+```
+
+**Root Cause**: Lines 69-77 in `index.html` contain inline script for Service Worker registration
+
+**Research**:
+- CSP directive `script-src 'self'` only allows external scripts from same origin
+- Inline scripts require adding 'unsafe-inline' or specific nonce/hash
+- Constitution requires strict CSP without 'unsafe-inline'
+
+**Decision**: Move Service Worker registration code to `app.js` inside DOMContentLoaded handler
+
+**Rationale**:
+- Complies with strict CSP (`script-src 'self'`)
+- Keeps all JS in external files
+- Maintains zero inline scripts requirement
+- SW can still be registered early enough (in DOMContentLoaded before main app logic)
+
+**Implementation**:
+```javascript
+document.addEventListener('DOMContentLoaded', async () => {
+  // Register Service Worker first
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch((error) => {
+      console.error('SW registration failed:', error);
+    });
+  }
+
+  // Rest of app initialization...
+  await db.init();
+  // ...
+});
+```
+
+**Alternatives Considered**:
+- Add 'unsafe-inline' to CSP: Rejected - violates security best practices
+- Add specific nonce/hash: Rejected - unnecessary complexity for simple app
+- Create separate sw-registration.js: Rejected - adds unnecessary file, app.js is appropriate place
+
+---
+
+### Bug 3: Duplicate Fetch Handlers in Service Worker
+
+**Problem**: `sw.js` has two identical `self.addEventListener('fetch', ...)` handlers (lines 66-82 and 84-100)
+
+**Root Cause**: Likely copy-paste error during code generation
+
+**Research**:
+- Service Workers can have multiple event listeners but they execute in order
+- Duplicate handlers cause unpredictable behavior and potential race conditions
+- Last registered handler may override first, or both may execute
+
+**Decision**: Remove the second duplicate handler (lines 84-100)
+
+**Rationale**:
+- Both handlers are identical, so removing one has no functional impact
+- Reduces code complexity
+- Prevents potential conflicts or double-handling
+
+**Alternatives Considered**:
+- Keep both handlers: Rejected - adds complexity, no benefit
+- Refactor to single handler with different logic: Not needed - both handlers do same thing
+
+---
+
+### Bug 4: catalog.json Not Loading
+
+**Problem**: No network request for `catalog.json` is made; app shows empty song list
+
+**Root Cause**: Unclear from initial inspection - needs debugging
+
+**Research**:
+- Service Worker intercepts fetch requests for catalog.json (line 76-78 in sw.js)
+- networkFirst strategy should fetch from network and cache the response
+- If fetch fails, it falls back to cache
+- However, app.js `loadCatalog()` function should still make the fetch call
+
+**Hypothesis**: The `loadCatalog()` function might be failing silently or not being called
+
+**Investigation Steps**:
+1. Verify `loadCatalog()` is called after db.init() in DOMContentLoaded
+2. Check if error handling in `loadCatalog()` is too broad
+3. Verify network-first strategy in SW is not blocking the request
+4. Check if Service Worker is intercepting and caching incorrectly
+
+**Current State**: Needs runtime debugging - add console.log statements to trace execution flow
+
+**Decision**: Add debugging logs to trace execution:
+- In `loadCatalog()`: log entry, success, error
+- In SW fetch handler: log requests for catalog.json
+- In DOMContentLoaded: log initialization steps
+
+---
+
+### Bug 5: Missing cache-manager.js Reference
+
+**Problem**: `sw.js` line 10 lists `/cache-manager.js` in PRECACHE_URLS but file may not exist
+
+**Research**:
+- Service Worker precaches all files in PRECACHE_URLS array
+- If file doesn't exist, cache.addAll() will fail and reject
+- This causes Service Worker installation to fail
+
+**Decision**: Verify if cache-manager.js exists; if not, remove from PRECACHE_URLS
+
+**Rationale**: Service Worker must install successfully for offline functionality. Non-existent files in cache list prevent installation.
+
+**Alternatives Considered**:
+- Create cache-manager.js: Not needed if all cache logic is in db.js
+- Keep in array with optional flag: Not supported - cache.all() requires all files to exist
+
+---
+
+## Bug Fix Implementation Order
+
+1. Fix CSP violation (remove inline script from index.html)
+2. Add db.js script tag to index.html (before app.js)
+3. Remove duplicate fetch handler from sw.js
+4. Add debugging logs to trace catalog.json loading
+5. Verify cache-manager.js existence (remove from PRECACHE_URLS if missing)
+6. Test fixes locally with http.server
+7. Verify offline functionality works
+
+---
+
+## Bug Fix Success Criteria
+
+- [ ] No CSP errors in browser console
+- [ ] MusicPlayerDB is defined when app.js executes
+- [ ] catalog.json loads successfully (200 OK)
+- [ ] Song list displays correctly
+- [ ] Service Worker installs successfully
+- [ ] App shell loads offline after first visit
+- [ ] Cached songs play offline
