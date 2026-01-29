@@ -5,6 +5,7 @@ let isPlaying = false;
 let searchQuery = '';
 let filteredSongs = [];
 const audioElement = new Audio();
+const db = new MusicPlayerDB();
 
 let audioPlayer;
 let searchInput;
@@ -14,6 +15,9 @@ let loadingSkeleton;
 let errorState;
 let errorMessage;
 let retryBtn;
+let offlineIndicator;
+let updateBanner;
+let refreshBtn;
 
 function formatDuration(seconds) {
   const mins = Math.floor(seconds / 60);
@@ -82,44 +86,106 @@ function filterSongs(query) {
 
 async function loadCatalog() {
   try {
+    console.log('[loadCatalog] Starting catalog load...');
     showLoadingState();
 
+    console.log('[loadCatalog] Fetching catalog.json...');
     const response = await fetch('./catalog.json');
+    console.log('[loadCatalog] Fetch response status:', response.status);
+
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     const data = await response.json();
+    console.log('[loadCatalog] Parsed JSON data:', data);
 
     if (!data.songs || !Array.isArray(data.songs)) {
       throw new Error('Invalid catalog format');
     }
 
+    console.log('[loadCatalog] Loaded', data.songs.length, 'songs');
     catalogData = data;
     songs = data.songs;
     filteredSongs = songs;
     renderSongList();
+    updateCacheIndicators();
     hideLoadingState();
+    console.log('[loadCatalog] Catalog loaded successfully');
 
   } catch (error) {
-    console.error('Failed to load catalog:', error);
-    showErrorState('Unable to load song catalog. Please try again later.');
+    console.error('[loadCatalog] Error loading catalog:', error);
+    if (!navigator.onLine) {
+      showErrorState('You are offline. The app must be loaded online first.');
+    } else {
+      showErrorState('Unable to load song catalog. Please try again later.');
+    }
   }
 }
 
-function playSong(index) {
+async function playSong(index) {
   currentSongIndex = index;
   const song = songs[index];
 
   try {
-    audioElement.src = song.url;
+    const cached = await db.getSong(song.id);
+    if (cached) {
+      audioElement.src = URL.createObjectURL(cached.audioBlob);
+      audioElement.play();
+      isPlaying = true;
+      updatePlayButtonIcons();
+      updatePlayingState();
+      return;
+    }
+
+    showLoadingState();
+
+    const estimate = await navigator.storage.estimate();
+    const currentUsage = await db.getStorageUsage();
+    const blob = await (await fetch(song.url)).blob();
+
+    if (estimate && estimate.quota) {
+      const neededSpace = blob.size;
+      const availableSpace = estimate.quota - estimate.usage;
+
+      if (availableSpace < neededSpace) {
+        const lruSongs = await db.getLRUSongs(10);
+
+        for (const lruSong of lruSongs) {
+          const lruBlob = lruSong.audioBlob;
+          const newUsage = currentUsage - lruBlob.size;
+
+          const newAvailable = estimate.quota - newUsage;
+
+          if (newAvailable >= neededSpace) {
+            await db.deleteSong(lruSong.id);
+            currentUsage = newUsage;
+            break;
+          }
+        }
+      }
+    }
+
+    await db.saveSong(song, blob);
+
+    audioElement.src = URL.createObjectURL(blob);
     audioElement.play();
     isPlaying = true;
+    hideLoadingState();
     updatePlayButtonIcons();
     updatePlayingState();
+    updateCacheIndicators();
+    await updateStorageDisplay();
+
   } catch (error) {
-    console.error('Failed to play song:', error);
-    showErrorState('Unable to play song. Please try again.');
+    hideLoadingState();
+    if (!navigator.onLine) {
+      showErrorState('Song not cached. Must play online first.');
+    } else if (error.message && error.message.includes('Storage quota')) {
+      showErrorState('Storage full. Clear some cached songs to make space.');
+    } else {
+      showErrorState('Unable to play song. Please try again.');
+    }
   }
 }
 
@@ -183,6 +249,7 @@ function createSongCard(song, songIndex) {
       <div class="song-title">${song.title}</div>
       <div class="song-artist">${song.artist}${duration ? ` • ${duration}` : ''}</div>
     </div>
+    <div class="cache-indicator" data-song-id="${song.id}"></div>
   `;
 
   songCard.addEventListener('click', () => playSong(songIndex));
@@ -195,6 +262,23 @@ function createSongCard(song, songIndex) {
   });
 
   return songCard;
+}
+
+async function updateCacheIndicators() {
+  const cachedSongs = await db.getAllSongs();
+  const cachedIds = new Set(cachedSongs.map(s => s.id));
+
+  document.querySelectorAll('.cache-indicator').forEach(indicator => {
+    const songId = indicator.dataset.songId;
+    if (cachedIds.has(songId)) {
+      indicator.classList.add('cached');
+      indicator.innerHTML = '⬇';
+      indicator.setAttribute('title', 'Song is cached for offline playback');
+    } else {
+      indicator.classList.remove('cached');
+      indicator.innerHTML = '';
+    }
+  });
 }
 
 function renderSongList() {
@@ -255,7 +339,26 @@ function updatePlayButtonIcons() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  console.log('[App] DOM loaded, initializing...');
+
+  if ('serviceWorker' in navigator) {
+    try {
+      console.log('[App] Registering Service Worker...');
+      const registration = await navigator.serviceWorker.register('./sw.js');
+      console.log('[App] Service Worker registered:', registration);
+
+      navigator.serviceWorker.addEventListener('message', (event) => {
+        if (event.data === 'waiting') {
+          console.log('[App] Service Worker update waiting, showing banner');
+          showUpdateBanner();
+        }
+      });
+    } catch (error) {
+      console.error('[App] Service Worker registration failed:', error);
+    }
+  }
+
   audioPlayer = audioElement;
   searchInput = document.getElementById('search-input');
   clearBtn = document.getElementById('clear-search');
@@ -265,6 +368,17 @@ document.addEventListener('DOMContentLoaded', () => {
   errorMessage = document.getElementById('error-message');
   retryBtn = document.getElementById('retry-btn');
 
+  try {
+    console.log('[App] Initializing IndexedDB...');
+    await db.init();
+    console.log('[App] IndexedDB initialized');
+    await updateStorageDisplay();
+  } catch (error) {
+    console.error('[App] Failed to initialize offline storage:', error);
+    showErrorState('Failed to initialize offline storage. Some features may not work.');
+  }
+
+  console.log('[App] Loading catalog...');
   loadCatalog();
 
   document.getElementById('play-pause-btn').addEventListener('click', togglePlayPause);
@@ -306,7 +420,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   audioElement.addEventListener('error', (e) => {
-    console.error('Audio error:', e);
     showErrorState('Failed to load audio file. Check if URL is accessible.');
   });
 
@@ -315,4 +428,112 @@ document.addEventListener('DOMContentLoaded', () => {
     updatePlayButtonIcons();
     updatePlayingState();
   });
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.addEventListener('message', (event) => {
+      if (event.data === 'waiting') {
+        showUpdateBanner();
+      }
+    });
+  }
+
+  window.addEventListener('online', updateOnlineStatus);
+  window.addEventListener('offline', updateOnlineStatus);
+  updateOnlineStatus();
+
+  refreshBtn = document.getElementById('refresh-btn');
+  if (refreshBtn) {
+    refreshBtn.addEventListener('click', () => {
+      window.location.reload();
+    });
+  }
+
+  const clearAllCacheBtn = document.getElementById('clear-all-cache');
+  if (clearAllCacheBtn) {
+    clearAllCacheBtn.addEventListener('click', () => {
+      if (confirm('Are you sure you want to clear all cached songs? You will need to be online to play them again.')) {
+        clearCache();
+      }
+    });
+  }
 });
+
+function updateOnlineStatus() {
+  offlineIndicator = document.getElementById('offline-indicator');
+  if (offlineIndicator) {
+    if (navigator.onLine) {
+      offlineIndicator.hidden = true;
+    } else {
+      offlineIndicator.hidden = false;
+    }
+  }
+}
+
+function showUpdateBanner() {
+  updateBanner = document.getElementById('update-banner');
+  if (updateBanner) {
+    updateBanner.hidden = false;
+  }
+}
+
+async function updateStorageDisplay() {
+  try {
+    const storageUsage = await db.getStorageUsage();
+    const estimate = await navigator.storage.estimate();
+
+    const storageUsageElement = document.getElementById('storage-usage');
+    const storageQuotaElement = document.getElementById('storage-quota');
+    const storageUsedElement = document.getElementById('storage-used');
+    const storageWarning = document.getElementById('storage-warning');
+
+    const mb = (storageUsage / 1024 / 1024).toFixed(2);
+    storageUsageElement.textContent = `${mb} MB`;
+
+    if (estimate && estimate.quota) {
+      const quotaMB = (estimate.quota / 1024 / 1024).toFixed(2);
+      storageQuotaElement.textContent = `${quotaMB} MB`;
+
+      const percentage = (storageUsage / estimate.quota * 100);
+      storageUsedElement.style.width = `${percentage}%`;
+
+      if (percentage > 80) {
+        storageWarning.hidden = false;
+      } else {
+        storageWarning.hidden = true;
+      }
+    }
+  } catch (error) {
+  }
+}
+
+async function clearCache(songId = null) {
+  try {
+    showLoadingState();
+
+    if (songId) {
+      await db.deleteSong(songId);
+    } else {
+      await db.clearAll();
+    }
+
+    await updateStorageDisplay();
+    await updateCacheIndicators();
+    hideLoadingState();
+
+    if (songId) {
+      alert('Song cache cleared');
+    } else {
+      alert('All cached songs cleared');
+    }
+  } catch (error) {
+    hideLoadingState();
+    alert('Failed to clear cache. Please try again.');
+  }
+}
+
+function showStorageWarning() {
+  const storageWarning = document.getElementById('storage-warning');
+  if (storageWarning) {
+    storageWarning.hidden = false;
+  }
+}
