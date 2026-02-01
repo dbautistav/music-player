@@ -238,10 +238,12 @@ function createSongCard(song, songIndex) {
   }
 
   const albumArt = song.albumArt
-    ? `<img src="${song.albumArt}" alt="${song.title}" loading="lazy" class="album-art">`
+    ? (song.albumArt.includes('http') || song.albumArt.includes('./') || song.albumArt.includes('songs/'))
+      ? `<img src="${song.albumArt}" alt="${song.title}" loading="lazy" class="album-art">`
+      : `<div class="album-art-placeholder">${song.albumArt}</div>`
     : `<div class="album-art-placeholder">🎵</div>`;
 
-  const duration = song.duration ? formatDuration(song.duration) : '';
+  const duration = song.isAmbient ? '∞' : (song.duration ? formatDuration(song.duration) : '');
 
   songCard.innerHTML = `
     ${albumArt}
@@ -428,14 +430,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     updatePlayButtonIcons();
     updatePlayingState();
   });
-
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.addEventListener('message', (event) => {
-      if (event.data === 'waiting') {
-        showUpdateBanner();
-      }
-    });
-  }
 
   window.addEventListener('online', updateOnlineStatus);
   window.addEventListener('offline', updateOnlineStatus);

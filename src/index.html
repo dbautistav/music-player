@@ -42,6 +42,14 @@
         <button id="retry-btn" aria-label="Retry loading catalog">Retry</button>
       </div>
 
+      <div id="song-list" role="list" aria-live="polite"></div>
+
+      <div id="player-controls">
+        <button id="prev-btn" aria-label="Previous song">Previous</button>
+        <button id="play-pause-btn" aria-label="Play or pause">Play</button>
+        <button id="next-btn" aria-label="Next song">Next</button>
+      </div>
+
       <section id="storage-info" class="storage-info" aria-live="polite">
         <p>Storage: <span id="storage-usage">0.00 MB</span> / <span id="storage-quota">--</span></p>
         <div id="storage-bar" class="storage-bar">
@@ -56,14 +64,6 @@
       <section id="cache-management" class="cache-management" aria-live="polite">
         <button id="clear-all-cache" class="clear-cache-btn">Clear All Cached Songs</button>
       </section>
-
-      <div id="song-list" role="list" aria-live="polite"></div>
-
-      <div id="player-controls">
-        <button id="prev-btn" aria-label="Previous song">Previous</button>
-        <button id="play-pause-btn" aria-label="Play or pause">Play</button>
-        <button id="next-btn" aria-label="Next song">Next</button>
-      </div>
     </main>
   </div>
 

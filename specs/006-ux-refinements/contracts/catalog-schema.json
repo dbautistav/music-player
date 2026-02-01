@@ -1,0 +1,75 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://music-player.local/schemas/catalog.json",
+  "title": "Music Player Catalog",
+  "description": "Schema for the music player song catalog (catalog.json)",
+  "type": "object",
+  "required": ["version", "lastUpdated", "songs"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+$",
+      "description": "Catalog version number in format X.Y"
+    },
+    "lastUpdated": {
+      "type": "string",
+      "format": "date",
+      "description": "ISO date of last catalog update (YYYY-MM-DD)"
+    },
+    "songs": {
+      "type": "array",
+      "description": "Array of songs in the catalog",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "artist", "url", "duration"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^song-\\d{3}$",
+            "description": "Unique song identifier (format: song-XXX)"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Display name of the song"
+          },
+          "artist": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Artist name or category (e.g., 'Ambient Sounds')"
+          },
+          "url": {
+            "type": "string",
+            "pattern": "^songs/.+\\.mp3$",
+            "description": "Relative path to audio file (songs/filename.mp3)"
+          },
+          "duration": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Track duration in seconds (0 for ambient tracks, displays as ∞)"
+          },
+          "isAmbient": {
+            "type": "boolean",
+            "default": false,
+            "description": "Flag indicating this is an ambient track (displays ∞ for duration)"
+          },
+          "albumArt": {
+            "type": "string",
+            "description": "Album art URL or Unicode icon character (e.g., '♫')"
+          },
+          "genre": {
+            "type": "string",
+            "description": "Music genre or category"
+          },
+          "fileSize": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "File size in bytes (optional, for storage management)"
+          }
+        }
+      },
+      "uniqueItems": true,
+      "minItems": 1
+    }
+  }
+}

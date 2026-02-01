@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastUpdated": "2026-01-28",
+  "lastUpdated": "2026-02-01",
   "songs": [
     {
       "id": "song-001",
@@ -31,6 +31,56 @@
       "albumArt": "https://www.bensound.com/bensound-img/ukulele.jpg",
       "genre": "Folk",
       "fileSize": 2050193
+    },
+    {
+      "id": "song-004",
+      "title": "Waterfall in a forest",
+      "artist": "Ambient Sounds",
+      "url": "songs/a1.mp3",
+      "duration": 0,
+      "isAmbient": true,
+      "albumArt": "♫",
+      "genre": "Ambient"
+    },
+    {
+      "id": "song-005",
+      "title": "Thunderstorm & Rain",
+      "artist": "Ambient Sounds",
+      "url": "songs/a2.mp3",
+      "duration": 0,
+      "isAmbient": true,
+      "albumArt": "♫",
+      "genre": "Ambient"
+    },
+    {
+      "id": "song-006",
+      "title": "Cafe Music",
+      "artist": "Ambient Sounds",
+      "url": "songs/a3.mp3",
+      "duration": 0,
+      "isAmbient": true,
+      "albumArt": "♫",
+      "genre": "Ambient"
+    },
+    {
+      "id": "song-007",
+      "title": "Brown Noise",
+      "artist": "Ambient Sounds",
+      "url": "songs/a4.mp3",
+      "duration": 0,
+      "isAmbient": true,
+      "albumArt": "♫",
+      "genre": "Ambient"
+    },
+    {
+      "id": "song-008",
+      "title": "Rainy Day",
+      "artist": "Ambient Sounds",
+      "url": "songs/a5.mp3",
+      "duration": 0,
+      "isAmbient": true,
+      "albumArt": "♫",
+      "genre": "Ambient"
     }
   ]
 }
