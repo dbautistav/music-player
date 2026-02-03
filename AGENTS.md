@@ -143,6 +143,7 @@ function formatDuration(seconds) {
 - IndexedDB (cached songs), Cache API (app shell), LocalStorage (preferences - future) (005-phase3-caching)
 - JavaScript ES6+ (Chrome/Edge 90+, Firefox 88+, Safari 14+, iOS Safari 14+) + None (vanilla JavaScript, zero dependencies per constitution) (006-ux-refinements)
 - IndexedDB for audio blobs (Phase 3), Cache API for app shell (Phase 3), catalog.json for song metadata (006-ux-refinements)
+- No new storage requirements (uses existing IndexedDB for cached songs, Cache API for app shell) (001-dark-theme-alpha-access)
 
 ## Recent Changes
 - 004-static-playback: Added JavaScript ES6+ (Chrome/Edge 90+, Firefox 88+, Safari 14+, iOS Safari 14+) + None (Phase 1-2: Zero dependencies per constitution)
