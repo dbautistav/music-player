@@ -4,8 +4,8 @@
   "description": "A simple, offline-capable music player PWA",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#4a90e2",
+  "background_color": "#242424",
+  "theme_color": "#242424",
   "orientation": "portrait",
   "scope": "/",
   "icons": [

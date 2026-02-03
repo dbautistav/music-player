@@ -4,11 +4,34 @@
   padding: 0;
 }
 
+:root {
+  /* Backgrounds */
+  --bg-primary: #242424;
+  --bg-secondary: #1a1a1a;
+  --bg-hover: #2a2a2a;
+
+  /* Text */
+  --text-primary: #e8e8e8;
+  --text-secondary: #b8b8b8;
+
+  /* Accents */
+  --accent-color: #1976d2;
+  --accent-hover: #64b5f6;
+
+  /* Borders */
+  --border-color: #3a3a3a;
+
+  /* Status */
+  --error-color: #c62828;
+  --warning-color: #ffb74d;
+  --success-color: #2e7d32;
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   line-height: 1.5;
-  color: #333;
-  background-color: #fff;
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
 }
 
 .container {
@@ -20,7 +43,7 @@ body {
 header {
   text-align: center;
   padding: 2rem 0;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--border-color);
   margin-bottom: 2rem;
 }
 
@@ -40,23 +63,25 @@ h1 {
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
-  background-color: #f5f5f5;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.2s;
 }
 
 .song-card:hover {
-  background-color: #e0e0e0;
+  background-color: var(--bg-hover);
 }
 
 .song-card.playing {
-  background-color: #1976d2;
-  color: #fff;
+  background-color: var(--accent-color);
+  color: #ffffff;
 }
 
 .song-card.playing.paused {
   background-color: #0d47a1;
+  color: #ffffff;
 }
 
 .album-art {
@@ -70,14 +95,14 @@ h1 {
 .album-art-placeholder {
   width: 80px;
   height: 80px;
-  background: #f0f0f0;
+  background: var(--bg-hover);
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 2rem;
   flex-shrink: 0;
-  color: #999;
+  color: var(--text-secondary);
 }
 
 .song-info {
@@ -92,6 +117,7 @@ h1 {
 
 .song-artist {
   font-size: 0.875rem;
+  color: var(--text-secondary);
   opacity: 0.8;
 }
 
@@ -100,19 +126,19 @@ h1 {
   justify-content: center;
   gap: 1rem;
   padding: 2rem 0;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid var(--border-color);
   position: sticky;
   bottom: 0;
   z-index: 100;
-  background-color: #fff;
+  background-color: var(--bg-primary);
 }
 
 button {
   padding: 0.75rem 1.5rem;
   font-size: 1rem;
   font-weight: 500;
-  background-color: #1976d2;
-  color: #fff;
+  background-color: var(--accent-color);
+  color: #ffffff;
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -122,7 +148,7 @@ button {
 }
 
 button:hover {
-  background-color: #1565c0;
+  background-color: var(--accent-hover);
 }
 
 button:active {
@@ -130,12 +156,12 @@ button:active {
 }
 
 button:focus-visible {
-  outline: 2px solid #1976d2;
+  outline: 2px solid var(--accent-color);
   outline-offset: 2px;
 }
 
 .song-card:focus-visible {
-  outline: 2px solid #1976d2;
+  outline: 2px solid var(--accent-color);
   outline-offset: -2px;
 }
 
@@ -148,15 +174,21 @@ button:focus-visible {
 #search-input {
   width: 100%;
   padding: 0.75rem 2.5rem 0.75rem 0.75rem;
-  border: 2px solid #e0e0e0;
+  border: 2px solid var(--border-color);
   border-radius: 8px;
   font-size: 1rem;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
   transition: border-color 0.2s;
 }
 
 #search-input:focus {
   outline: none;
-  border-color: #1976d2;
+  border-color: var(--accent-color);
+}
+
+#search-input::placeholder {
+  color: var(--text-secondary);
 }
 
 .clear-btn {
@@ -168,7 +200,7 @@ button:focus-visible {
   border: none;
   cursor: pointer;
   font-size: 1.2rem;
-  color: #999;
+  color: var(--text-secondary);
   display: none;
   padding: 0.5rem;
 }
@@ -188,9 +220,9 @@ button:focus-visible {
   height: 80px;
   background: linear-gradient(
     90deg,
-    #f0f0f0 25%,
-    #e0e0e0 50%,
-    #f0f0f0 75%
+    var(--bg-primary) 25%,
+    var(--bg-secondary) 50%,
+    var(--bg-primary) 75%
   );
   background-size: 200% 100%;
   animation: loading 1.5s infinite;
@@ -208,14 +240,14 @@ button:focus-visible {
 }
 
 .error-state p {
-  color: #d32f2f;
+  color: var(--error-color);
   margin-bottom: 1rem;
 }
 
 .error-state button {
   padding: 0.75rem 1.5rem;
-  background: #1976d2;
-  color: white;
+  background-color: var(--accent-color);
+  color: #ffffff;
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -224,7 +256,7 @@ button:focus-visible {
 .no-results {
   text-align: center;
   padding: 2rem;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 [hidden] {
@@ -236,8 +268,8 @@ button:focus-visible {
   top: 0;
   left: 0;
   right: 0;
-  background-color: #d32f2f;
-  color: white;
+  background-color: var(--warning-color);
+  color: #ffffff;
   text-align: center;
   padding: 0.5rem;
   font-weight: 500;
@@ -249,8 +281,8 @@ button:focus-visible {
   top: 0;
   left: 0;
   right: 0;
-  background-color: #388e3c;
-  color: white;
+  background-color: var(--success-color);
+  color: #ffffff;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -260,8 +292,8 @@ button:focus-visible {
 }
 
 .refresh-btn {
-  background-color: white;
-  color: #388e3c;
+  background-color: #1b5e20;
+  color: #ffffff;
   padding: 0.5rem 1rem;
   font-size: 0.875rem;
   min-width: auto;
@@ -269,11 +301,12 @@ button:focus-visible {
 }
 
 .refresh-btn:hover {
-  background-color: #e8f5e9;
+  background-color: #2e7d32;
 }
 
 .cache-indicator {
   font-size: 1.2rem;
+  color: var(--text-secondary);
   opacity: 0.5;
   transition: opacity 0.2s;
 }
@@ -284,7 +317,7 @@ button:focus-visible {
 
 .storage-info {
   padding: 1rem;
-  background-color: #f5f5f5;
+  background-color: var(--bg-secondary);
   border-radius: 8px;
   margin-bottom: 1rem;
 }
@@ -296,20 +329,20 @@ button:focus-visible {
 
 .storage-bar {
   height: 8px;
-  background-color: #e0e0e0;
+  background-color: var(--bg-hover);
   border-radius: 4px;
   overflow: hidden;
 }
 
 .storage-used {
   height: 100%;
-  background-color: #1976d2;
+  background-color: var(--accent-color);
   transition: width 0.3s;
 }
 
 .storage-warning {
-  background-color: #ffa000;
-  color: white;
+  background-color: var(--warning-color);
+  color: #ffffff;
   padding: 0.75rem;
   border-radius: 4px;
   margin-bottom: 1rem;
@@ -323,7 +356,7 @@ button:focus-visible {
 }
 
 .clear-cache-btn {
-  background-color: #d32f2f;
+  background-color: var(--error-color);
 }
 
 .clear-cache-btn:hover {
